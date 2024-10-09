@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pet_care_app/main.dart';
+
+import 'model/pet.dart';
 
 class PetProfileScreen extends StatefulWidget {
-  const PetProfileScreen({super.key});
+  final Pet pet;
+
+  const PetProfileScreen({super.key, required this.pet});
 
   @override
   State<PetProfileScreen> createState() => _PetProfileScreenState();
@@ -279,7 +282,7 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Bull Dog',
+                          widget.pet.name,
                           style: TextStyle(
                               fontSize: 35.h, fontWeight: FontWeight.bold),
                         ),
