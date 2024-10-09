@@ -2,8 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive/hive.dart';
+import 'package:pet_care_app/page/search_page.dart';
 import 'package:pet_care_app/pet_profile_screen.dart';
 import 'package:pet_care_app/profile_screen.dart';
+
+import 'model/pet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +17,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late final Box<Pet> pets;
+
+  @override
+  void initState() {
+    super.initState();
+    pets = Hive.box<Pet>('petBox');
+    pets.add(Pet(
+      name: 'bull Dog',
+      age: 1,
+      colour: 'white ',
+      size: '300',
+      breed: '',
+      picture: 'assets/bull_dog.jpg',
+      price: '\$ 323',
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,35 +99,34 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: EdgeInsets.all(30.0).h,
                           child: Text(
                             'Search for a pet',
-                            style: TextStyle(
-                                color: Colors.black87, fontSize: 30),
+                            style:
+                                TextStyle(color: Colors.black87, fontSize: 30),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20.w, vertical: 5.h),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: CupertinoColors.white,
-                              label: ListTile(
-                                leading: Icon(
-                                  Icons.search_rounded,
-                                  color: Colors.black45,
-                                ),
-                                title: Text(
-                                  'search...',
-                                  style: TextStyle(
-                                      color: Colors.black45, fontSize: 19),
-                                ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SearchPage();
+                                },
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xffFFFFFF)),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    20.r,
-                                  ),
+                            );
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20.w, vertical: 5.h),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Color(0xffFFFFFF),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30))),
+                              child: ListTile(
+                                leading: Icon(CupertinoIcons.search),
+                                title: Text(
+                                  'search.....',
+                                  style: TextStyle(color: Colors.black45),
                                 ),
                               ),
                             ),
@@ -185,102 +205,97 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-
                 ],
               ),
             ),
-            Container(
-              child: SizedBox(
-                height: MediaQuery.sizeOf(context).height*0.4,
-                child: ListView.builder(
-                  itemCount: 4,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return const PetProfileScreen();
-                            },
-                          ),
-                        );
-                      },
-                      child: Card(
-                        color: Color(0xffFFFFFF),
-                        child: Row(
-                          children: [
-                            Container(
-                              height: 150.h,
-                              width: 150.w,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                      Radius.circular(18.r)),
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/bull_dog.jpg'),
-                                  )),
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            Column(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'BUll dog',
-                                  style: TextStyle(
-                                      fontSize: 27.h,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const Text(
-                                  'lorem ipsum is simply dummy',
-                                  style: TextStyle(
-                                      color: Colors.black26),
-                                ),
-                                RatingBar.builder(
-                                  initialRating: 3,
-                                  minRating: 0,
-                                  direction: Axis.horizontal,
-                                  allowHalfRating: true,
-                                  itemSize: 25.h,
-                                  itemCount: 5,
-                                  itemPadding:
-                                  const EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  itemBuilder: (context, _) =>
-                                  const Icon(
-                                    Icons.star,
-                                    size: 5,
-                                    color: Colors.redAccent,
-                                  ),
-                                  onRatingUpdate: (rating) {
-                                    print(rating);
-                                  },
-                                ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      '\$75',
-                                      style:
-                                      TextStyle(fontSize: 35.h),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ],
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height * 0.4.h,
+              child: ListView.builder(
+                itemCount: pets.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final pet = pets.getAt(index);
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return PetProfileScreen(pet: pet);
+                          },
                         ),
+                      );
+                    },
+                    child: Card(
+                      color: Color(0xffFFFFFF),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 150.h,
+                            width: 150.w,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18.r)),
+                                image: DecorationImage(
+                                  image: AssetImage(pet!.picture),
+                                )),
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                pet!.name,
+                                style: TextStyle(
+                                    fontSize: 27.h,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'lorem ipsum is simply dummy',
+                                    style: TextStyle(color: Colors.black26),
+                                  ),
+                                  Icon(Icons.delete)
+                                ],
+                              ),
+                              RatingBar.builder(
+                                initialRating: 3,
+                                minRating: 0,
+                                direction: Axis.horizontal,
+                                allowHalfRating: true,
+                                itemSize: 25.h,
+                                itemCount: 5,
+                                itemPadding:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                itemBuilder: (context, _) => const Icon(
+                                  Icons.star,
+                                  size: 5,
+                                  color: Colors.redAccent,
+                                ),
+                                onRatingUpdate: (rating) {
+                                  print(rating);
+                                },
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    pet!.price,
+                                    style: TextStyle(fontSize: 35.h),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
-
           ],
         ),
       ),

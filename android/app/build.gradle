@@ -9,7 +9,6 @@ android {
     namespace = "com.example.pet_care_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-    buildToolsVersion = "34"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pet_care_app/Splash.dart';
+import 'package:pet_care_app/model/pet.dart';
 
-void main() {
+Future<void> main() async {
+  await Hive.initFlutter();
+  
+  Hive.registerAdapter(PetAdapter());
+
+  await Hive.openBox<Pet>('petBox');
+
   runApp(const MyApp());
 }
 
